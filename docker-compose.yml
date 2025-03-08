@@ -1,63 +1,101 @@
+# This Docker Compose file defines three services: mainline, stable, and alpine.
+# Each service builds an NGINX container with different configurations and versions.
+
+# Version of the Docker Compose file format
 version: "3.7"
 
 services:
+  # Mainline NGINX service
   mainline:
+    # Container name
     container_name: mainline-nginx
+    # Image name and tag
     image: app:mainline
+    # Build configuration
     build:
       context: .
       dockerfile: nginx.Dockerfile
       args:
+        # NGINX version to use
         NGINX_VERSION: 1.17.9-perl
+        # Configuration file to use during build
         BUILD_FILE: debian.conf
+    # Environment variables
     environment:
       NGINX_VERSION: 1.17.9-perl
+    # Restart policy
     restart: unless-stopped
+    # Network configuration
     networks:
       - my_network
+    # Volume mapping
     volumes:
       - ./app/debian.conf:/etc/nginx/conf.d/default.conf
+    # Port mapping
     ports:
       - "8080:80"
 
+  # Stable NGINX service
   stable:
+    # Container name
     container_name: stable-nginx
+    # Image name and tag
     image: app:${DEFAULT_NGINX_VERSION}
+    # Build configuration
     build:
       context: .
       dockerfile: nginx.Dockerfile
       args:
+        # NGINX version to use
         NGINX_VERSION: ${DEFAULT_NGINX_VERSION}
+        # Configuration file to use during build
         BUILD_FILE: debian.conf
+    # Environment variables
     environment:
       NGINX_VERSION: ${DEFAULT_NGINX_VERSION}
+    # Restart policy
     restart: unless-stopped
+    # Network configuration
     networks:
       - my_network
+    # Volume mapping
     volumes:
       - ./app/debian.conf:/etc/nginx/conf.d/default.conf
+    # Port mapping
     ports:
       - "8081:80"
 
+  # Alpine NGINX service
   alpine:
+    # Container name
     container_name: alpine-nginx
+    # Image name and tag
     image: app:alpine
+    # Build configuration
     build:
       context: .
       dockerfile: nginx.Dockerfile
       args:
+        # NGINX version to use
         NGINX_VERSION: 1.17.9-alpine-perl
+        # Configuration file to use during build
         BUILD_FILE: alpine.conf
+    # Environment variables
     environment:
       NGINX_VERSION: 1.17.9-alpine-perl
+    # Restart policy
     restart: unless-stopped
+    # Network configuration
     networks:
       - my_network
+    # Volume mapping
     volumes:
       - ./app/alpine.conf:/etc/nginx/conf.d/default.conf
+    # Port mapping
     ports:
       - "8082:80"
 
+# Network configuration
 networks:
   my_network:
     driver: bridge

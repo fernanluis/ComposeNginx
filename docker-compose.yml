@@ -1,0 +1,63 @@
+version: "3.7"
+
+services:
+  mainline:
+    container_name: mainline-nginx
+    image: app:mainline
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+      args:
+        NGINX_VERSION: 1.17.9-perl
+        BUILD_FILE: debian.conf
+    environment:
+      NGINX_VERSION: 1.17.9-perl
+    restart: unless-stopped
+    networks:
+      - my_network
+    volumes:
+      - ./app/debian.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+
+  stable:
+    container_name: stable-nginx
+    image: app:${DEFAULT_NGINX_VERSION}
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+      args:
+        NGINX_VERSION: ${DEFAULT_NGINX_VERSION}
+        BUILD_FILE: debian.conf
+    environment:
+      NGINX_VERSION: ${DEFAULT_NGINX_VERSION}
+    restart: unless-stopped
+    networks:
+      - my_network
+    volumes:
+      - ./app/debian.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8081:80"
+
+  alpine:
+    container_name: alpine-nginx
+    image: app:alpine
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+      args:
+        NGINX_VERSION: 1.17.9-alpine-perl
+        BUILD_FILE: alpine.conf
+    environment:
+      NGINX_VERSION: 1.17.9-alpine-perl
+    restart: unless-stopped
+    networks:
+      - my_network
+    volumes:
+      - ./app/alpine.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8082:80"
+
+networks:
+  my_network:
+    driver: bridge
